@@ -1,5 +1,5 @@
 # Raspberry Pi Pico
-AMPY_PORT=/dev/serial/by-id/usb-MicroPython_Board_in_FS_mode_e66118c4e3689427-if00
+#AMPY_PORT=/dev/serial/by-id/usb-MicroPython_Board_in_FS_mode_e66118c4e3689427-if00
 
 # Raspberry Pi Pico W
-#AMPY_PORT=/dev/serial/by-id/usb-MicroPython_Board_in_FS_mode_e6616407e3392e2c-if00
+AMPY_PORT=/dev/serial/by-id/usb-MicroPython_Board_in_FS_mode_e6616407e3392e2c-if00
