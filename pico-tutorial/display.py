@@ -1,4 +1,5 @@
 from machine import Pin, I2C
+# NOTE: Uses the external repo RPI-PICO-I2C-LCD for the drivers
 from lcd_api import LcdApi
 from pico_i2c_lcd import I2cLcd
 
