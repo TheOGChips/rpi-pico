@@ -1,0 +1,10 @@
+# SRC: https://learn.sparkfun.com/tutorials/how-to-run-a-raspberry-pi-program-on-startup/all
+[Unit]
+Description=Run the Pumpkin Pi
+After=multi-user.target
+
+[Service]
+ExecStart=/home/chris/Documents/pumpkin-pi/.pumpkin-pi-venv/bin/python3 /home/chris/Documents/pumpkin-pi/pumpkin-pi.py
+
+[Install]
+WantedBy=multi-user.target
