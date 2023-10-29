@@ -1,5 +1,6 @@
 import RPi.GPIO as GPIO
 from time import sleep
+from random import choice
 
 GPIO.setmode(GPIO.BCM)
 
@@ -70,8 +71,21 @@ class PumpkinPi:
             rim_halves.reverse()
         self.off()
 
-    # TODO: Randomly light up the rim
     def rand (self):
+        self.start()
+        rim_pins_left = [pin for pin in self.rim_pins]
+        while rim_pins_left != []:
+            pin = choice(rim_pins_left)
+            self.rim[self.rim_pins.index(pin)].ChangeDutyCycle(self.red_duty_cycle)
+            rim_pins_left.remove(pin)
+            self.sleep()
+
+        for _ in range(3):
+            self.flash_eyes()
+        self.off()
+
+    # TODO: Light up LEDs on alternating halves
+    def half_and_half (self):
         self.start()
         self.off()
 
