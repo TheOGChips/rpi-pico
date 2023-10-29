@@ -80,13 +80,14 @@ class PumpkinPi:    # pylint: disable=too-many-instance-attributes
         rim_halves = [self.rim[::2], self.rim[1::2]]
         for pin in self.left_eye, self.right_eye:
             pin.ChangeDutyCycle(self.green_duty_cycle)
-        for _ in range(2):
-            for pin in rim_halves[0]:
-                pin.ChangeDutyCycle(self.red_duty_cycle)
-            for pin in rim_halves[1]:
-                pin.ChangeDutyCycle(0.0)
-            self.sleep()
-            rim_halves.reverse()
+        for _ in range(5):
+            for _ in range(2):
+                for pin in rim_halves[0]:
+                    pin.ChangeDutyCycle(self.red_duty_cycle)
+                for pin in rim_halves[1]:
+                    pin.ChangeDutyCycle(0.0)
+                self.sleep()
+                rim_halves.reverse()
         self.off()
 
     def rand (self):
