@@ -71,7 +71,6 @@ class PumpkinPi:    # pylint: disable=too-many-instance-attributes
 
         self.off()
 
-
     def alt (self):
         ''' Turns on every other LED (i.e. alternating LEDs) around the rim, then flashes the eyes
             on and off. Then, all rim LEDs toggle on or off, and the eyes flash on and off one more
@@ -79,12 +78,13 @@ class PumpkinPi:    # pylint: disable=too-many-instance-attributes
         '''
         self.start()
         rim_halves = [self.rim[::2], self.rim[1::2]]
+        for pin in self.left_eye, self.right_eye:
+            pin.ChangeDutyCycle(self.green_duty_cycle)
         for _ in range(2):
             for pin in rim_halves[0]:
                 pin.ChangeDutyCycle(self.red_duty_cycle)
             for pin in rim_halves[1]:
                 pin.ChangeDutyCycle(0.0)
-            self.flash_eyes()
             self.sleep()
             rim_halves.reverse()
         self.off()
