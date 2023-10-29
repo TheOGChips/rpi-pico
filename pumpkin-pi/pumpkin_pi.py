@@ -149,7 +149,7 @@ class PumpkinPi:    # pylint: disable=too-many-instance-attributes
             fns_left.remove(fn)
             self.sleep()
 
-    def sleep (self, sec: int = 1.0):
+    def sleep (self, sec: float = 1.0):
         ''' Class wrapper function for time.sleep. Default is to sleep for 1 second. '''
         sleep(sec)
 
