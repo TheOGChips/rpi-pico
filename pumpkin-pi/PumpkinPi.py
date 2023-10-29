@@ -57,9 +57,17 @@ class PumpkinPi:
 
         self.off()
 
-    # TODO: Light up every other rim LED as the eyes blink
     def alt (self):
         self.start()
+        rim_halves = [self.rim[::2], self.rim[1::2]]
+        for _ in range(2):
+            for pin in rim_halves[0]:
+                pin.ChangeDutyCycle(self.red_duty_cycle)
+            for pin in rim_halves[1]:
+                pin.ChangeDutyCycle(0.0)
+            self.flash_eyes()
+            self.sleep()
+            rim_halves.reverse()
         self.off()
 
     # TODO: Randomly light up the rim
