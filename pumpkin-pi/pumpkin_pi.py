@@ -114,9 +114,6 @@ class PumpkinPi:    # pylint: disable=too-many-instance-attributes
         half = int(len(self.rim) / 2)
         left = self.rim[:half]
         right = self.rim[half:]
-        print(left)
-        print(right)
-        print(self.rim)
         if starting_positions == 'top':
             left.reverse()
         elif starting_positions == 'bottom':
@@ -134,9 +131,23 @@ class PumpkinPi:    # pylint: disable=too-many-instance-attributes
             self.flash_eyes()
         self.off()
 
-    # TODO: Cycle through all available modes
     def cycle (self):
-        pass
+        ''' Randomly cycles through each of the different display options. Each option is gauranteed
+            to run once. The board resets all LEDs after each display option finishes.
+        '''
+        half_and_half_options_left = ['top', 'bottom', 'topleft-bottomright', 'topright-bottomleft']
+        fns_left = [self.seq, self.alt, self.rand] + \
+                    [self.half_and_half]*len(half_and_half_options_left)
+        while fns_left and half_and_half_options_left:
+            fn = choice(fns_left)
+            if fn == self.half_and_half:    # pylint: disable=comparison-with-callable
+                option = choice(half_and_half_options_left)
+                fn(option)
+                half_and_half_options_left.remove(option)
+            else:
+                fn()
+            fns_left.remove(fn)
+            self.sleep()
 
     def sleep (self, sec: int = 1.0):
         ''' Class wrapper function for time.sleep. Default is to sleep for 1 second. '''
