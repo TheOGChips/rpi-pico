@@ -1,3 +1,8 @@
+''' A Bluetooth server that controls the laser output color synchronization between it and a client.
+    This node also operates a web server and a Wi-Fi access point. The web server is accessed via a web
+    browser using a smartphone or laptop connected to the Wi-Fi access point. The web page shown in the
+    web browser is used to control the laser output.
+'''
 from usocket import socket, AF_INET, SOCK_STREAM
 from network import WLAN, AP_IF, hostname
 from machine import Pin, PWM, reset
@@ -51,7 +56,6 @@ print("Connected to BT peripheral...")
 SSID = 'Halloween Light Show'
 PASSWORD = 'Ha!!0w33n'
 ap = WLAN(AP_IF)
-# NOTE: txpower can be configured for a maximum, this may be useful
 ap.config(ssid=SSID, password=PASSWORD)
 hostname("light-show")
 #print(ap.config())
@@ -61,16 +65,6 @@ while not ap.active():
     print('Awaiting activation...')
 print('Access point activated')
 
-# NOTE: The same IP address is also used for the gateway
-# TODO: For some reason, an IP address different from the default doesn't connect if it's different enough. For example, 192.168.4.2 works, but 10.10.200.0 doesn't, even when the netmask is all zeroes.'
-#IP_ADDR='192.168.4.2'
-#NETMASK='255.255.255.0'
-#GATEWAY=IP_ADDR
-#DNS='0.0.0.0'
-#ap.ifconfig((IP_ADDR, NETMASK, GATEWAY, DNS))
-#print(ap.ifconfig())
-
-# TODO: Have the onboard LED blink consistently in a separate thread
 sock = socket(AF_INET, SOCK_STREAM)
 sock.bind(('192.168.4.1', 80))
 sock.listen(2)
@@ -87,8 +81,6 @@ red.duty_u16(2**16 - 1)
 green.freq(60)
 green.duty_u16(2**16 - 1)
 
-#while True:
-#    if bt_server.is_connected():
 while bt_server.is_connected():
         conn, rx = sock.accept()
         #print('Incoming connection from %s' %str(rx))

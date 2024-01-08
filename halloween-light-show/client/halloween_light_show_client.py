@@ -1,11 +1,17 @@
+''' A Bluetooth client in peripheral mode using BLE (Bluetooth Low Energy). This client syncs with the
+    server to output the same laser color as the server.
+'''
 from machine import Pin, PWM
 from bluetooth import BLE
 from ble_simple_peripheral import BLESimplePeripheral
 from ble_advertising import advertising_payload
 
+# NOTE: PWM allows a nice fading effect.
 red = PWM(Pin(15, Pin.OUT))
 green = PWM(Pin(16, Pin.OUT))
 
+# NOTE: Because I'm using PNP transistors for the lasers, on and off work in reverse, so 0 is max
+#       brightness and 65535 is off.
 red.freq(60)
 red.duty_u16(2**16 - 1)
 green.freq(60)
@@ -15,6 +21,7 @@ curr = None
 first_cmd = True
 
 def on_rx(v):
+    ''' Decodes the received command from the server and syncs the output colored laser. '''
     global curr
     global first_cmd
     print(str(v))
