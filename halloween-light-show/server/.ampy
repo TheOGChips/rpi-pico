@@ -1,2 +1,2 @@
 # Raspberry Pi Pico W (Blue Button)
-AMPY_PORT=/dev/serial/by-id/usb-MicroPython_Board_in_FS_mode_e6616407e3392e2c-if00
+AMPY_PORT=/dev/serial/by-id/usb-MicroPython_Board_in_FS_mode_e661a4d4178e662a-if00

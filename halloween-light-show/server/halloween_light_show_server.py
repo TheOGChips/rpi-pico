@@ -1,23 +1,55 @@
 from usocket import socket, AF_INET, SOCK_STREAM
 from network import WLAN, AP_IF, hostname
-from machine import Pin, PWM
+from machine import Pin, PWM, reset
 from re import search
 from bluetooth import BLE
 from ble_simple_central import BLESimpleCentral
 from ble_advertising import advertising_payload
 from utime import sleep
 
+def on_scan (addr_type, addr, name):
+    ''' Detects whether a Bluetooth peripheral device is present and connects to it. '''
+    if addr_type is not None:
+        print("Found peripheral:", addr_type, addr, name)
+        print(bt_server.connect())
+
+def web_page():
+    ''' Reads in an HTML file and returns it as a string. '''
+    with open("index.html", "r") as infile:
+        html = infile.read()
+
+    return str(html)
+
+# NOTE: Establish a Bluetooth connection with a peripheral device first. If a connection is not
+#       established within 5 seconds, this board will hard reset. This will continue until a Bluetooth
+#       peripheral device is discovered and connected to. This is (at least currently) sufficient
+#       enough to circumvent the issue of a peripheral device needing to be turned on and present
+#       first. Otherwise, if a peripheral device is turned on after the central device (the server) has
+#       started searching, it could result in a deadlock between the devices.
+led = Pin('LED', Pin.OUT)
+led.off()
+bt_server = BLESimpleCentral(BLE())
+bt_server.scan(callback=on_scan)
+for _ in range(50): # NOTE: Search for peripheral devices for 5 seconds.
+    if not bt_server.is_connected():
+        print('Awaiting BT peripheral connection...')
+        sleep(0.1)
+if not bt_server.is_connected():    # NOTE: Blink a warning that the Pico W is about to hard reset by
+    for _ in range(3):              #       blinking the onboard LED in a certain pattern (roughly 3x
+        for _ in range(6):          #       per second for 3 seconds).
+            led.toggle()
+            sleep(0.1)
+        sleep(0.5)
+    led.off()
+    reset()
+print("Connected to BT peripheral...")
+
+# NOTE: Establish a Wi-Fi access point for external devices to connect to. The way this is currently
+#       set up, if some kind of error occurs, the only way to ensure the IP address is freed is to
+#       perform a hard reset of the Pico W. The password should be replaced with something more
+#       security-conscious if that is a concern.
 SSID = 'Halloween Light Show'
 PASSWORD = 'Ha!!0w33n'
-red = PWM(Pin(15, Pin.OUT))
-green = PWM(Pin(16, Pin.OUT))
-# NOTE: Since I'm using PNP transistors, the on and off functions work in reverse
-
-red.freq(60)
-red.duty_u16(2**16 - 1)
-green.freq(60)
-green.duty_u16(2**16 - 1)
-
 ap = WLAN(AP_IF)
 # NOTE: txpower can be configured for a maximum, this may be useful
 ap.config(ssid=SSID, password=PASSWORD)
@@ -27,8 +59,8 @@ ap.active(True)
 
 while not ap.active():
     print('Awaiting activation...')
-
 print('Access point activated')
+
 # NOTE: The same IP address is also used for the gateway
 # TODO: For some reason, an IP address different from the default doesn't connect if it's different enough. For example, 192.168.4.2 works, but 10.10.200.0 doesn't, even when the netmask is all zeroes.'
 #IP_ADDR='192.168.4.2'
@@ -39,13 +71,6 @@ print('Access point activated')
 #print(ap.ifconfig())
 
 # TODO: Have the onboard LED blink consistently in a separate thread
-
-def web_page():
-    with open("index.html", "r") as infile:
-        html = infile.read()
-    
-    return str(html)
-
 sock = socket(AF_INET, SOCK_STREAM)
 sock.bind(('192.168.4.1', 80))
 sock.listen(2)
@@ -53,17 +78,14 @@ response = web_page()
 first_cmd = True
 curr = None
 
-bt_server = BLESimpleCentral(BLE())
-def on_scan (addr_type, addr, name):
-    if addr_type is not None:
-        print("Found peripheral:", addr_type, addr, name)
-        print(bt_server.connect())
+red = PWM(Pin(15, Pin.OUT))
+green = PWM(Pin(16, Pin.OUT))
+# NOTE: Since I'm using PNP transistors, the on and off functions work in reverse
 
-bt_server.scan(callback=on_scan)
-while not bt_server.is_connected():
-    print('Awaiting BT peripheral connection...')
-    sleep(0.1)
-print("Connected to BT peripheral...")
+red.freq(60)
+red.duty_u16(2**16 - 1)
+green.freq(60)
+green.duty_u16(2**16 - 1)
 
 #while True:
 #    if bt_server.is_connected():

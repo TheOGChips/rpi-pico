@@ -3,7 +3,6 @@ from bluetooth import BLE
 from ble_simple_peripheral import BLESimplePeripheral
 from ble_advertising import advertising_payload
 
-bt_client = BLESimplePeripheral(BLE())
 red = PWM(Pin(15, Pin.OUT))
 green = PWM(Pin(16, Pin.OUT))
 
@@ -41,4 +40,5 @@ def on_rx(v):
         first_cmd = True
         curr = None
 
+bt_client = BLESimplePeripheral(BLE())
 bt_client.on_write(on_rx)
